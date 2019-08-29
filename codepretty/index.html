@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>codepretty</title>
+  <style>
+    *{padding:0;margin:0}
+    body{
+     counter-reset: num;
+    }
+    .prettycode{
+      display:block; 
+      background:#333;
+      color:#fff;
+      position:relative; 
+      padding-left:35px; 
+      overflow:auto;     
+    }
+   .prettycode .codeDemo{
+     display:block;
+     line-height:1.5;
+     font-size: 14px;
+     padding:20px 0; 
+   } 
+   .prettycode .obtn{ 
+     position:fixed;
+     background:#000;
+     padding:3px 10px;
+     cursor:pointer;
+     border-radius: 2px;
+     transition:all .5s ease-in-out;
+   }
+   .prettycode .obtn.copy{
+     opacity:0;    
+   }
+   .prettycode:hover .obtn.copy{
+     opacity:1;
+     transition:all .5s ease-in-out;
+   }
+   .prettycode:hover .lang{
+     opacity:0;
+     transition:all .5s ease-in-out;
+   }
+   .prettycode .cno{
+     position:absolute;
+     top:20px;
+     left:0; 
+     width:25px;
+     text-align:center; 
+     border-right:1px solid #fff;
+   }
+   .prettycode .cno li{
+     height:21px;
+     line-height:21px;
+   }
+  
+   pre{
+     white-space: pre-line;
+     overflow-x: auto;
+   }
+   pre:hover,pre:focus {
+     width:max-content; 
+   }
+   </style>
+</head>
+<body>
+  <code class="codeDemo" data-lang="HTML">
+    <p>我是被复制的文本</p>
+    <p>我是被复制的文本</p>
+    <p>我是被复制的文本</p>
+    <p>我是被复制的文本</p>
+    <p>我是被复制的文本</p>
+  </code>
+  <br><br>
+  <code class="codeDemo" data-width="500" data-lang="JS">
+    $(function(){
+      console.log("我是有态度code.")
+    })
+  </code>
+  <br><br>
+  <code class="codeDemo" data-width="600" data-lang="css" data-id="cssID">
+    //css 注释
+    .demo{
+      color:#fff;
+      font-size:22px;
+    }
+  </code>
+  <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script>
+  $(function(){   
+      $("code").each(function(item) {
+        var tmp = $(this).html();
+        var newTmp = tmp.replace(/\</g, "&lt;").replace(/\>/g, "&gt;");       
+       $(this).html(newTmp).wrapAll("<pre class='prettycode'></pre>");
+       $(this).parent().css({width: $(this).data("width") || "max-content", height: $(this).data("height")|| "min-content"})
+       var numLi = $(this).height()/21, liTmp = '';
+       for (var i=1; i<=numLi; i++) {
+         liTmp += "<li>"+i+"</li>";
+       }
+       var oUl = $("<ul class='cno'>" + liTmp + "</ul>")
+       $(this).parent().append(oUl); 
+       var copyId = $(this).data("id") ? $(this).data("id") : 's' + randId();
+       $(this).attr("id", copyId);
+       $(this).parent().append($("<span class='obtn copy' data-clipboard-action='copy' data-clipboard-target='#"+copyId+"' style='margin-left:"+($(this).width()-60)+"px;margin-top:-"+ ($(this).height()+25)+"px'>copy</span><span class='obtn lang'style='margin-left:"+($(this).width()-60)+"px;margin-top:-"+ ($(this).height()+25)+"px'>"+$(this).data("lang")+"</span>"))
+       
+      })  
+       $(document, ".obtn.copy").on("click", function(e){
+         if(e.target.nodeName!="SPAN") return;
+         copyTxt(e.target.parentNode.children[0])
+       })
+    })
+     
+    function copyTxt(el) {
+      const range = document.createRange();
+      range.selectNode(el);
+      const selection = window.getSelection();
+      if(selection.rangeCount > 0) selection.removeAllRanges();
+        selection.addRange(range);       
+      document.execCommand('copy');     
+    }
+    
+    function randId() {
+      var arr= [];
+      for(var i=0; i<50; i++) {
+        arr.push(i)
+      }
+      var num = arr[Math.floor(Math.random()*50)];
+      arr.splice(arr.indexOf(num), 1);
+      return num;
+    }
+  </script>
+</body>
+</html>
